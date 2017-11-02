@@ -1,0 +1,19 @@
+---
+- name: create tmp folder
+  tempfile: state=directory suffix=protoc
+  register: tmp_path
+
+- name: print temp path
+  debug: var=tmp_path.path
+
+- name: get and extract protobuf
+  unarchive:
+    src: https://github.com/google/protobuf/releases/download/v3.2.0/protoc-3.2.0-linux-x86_64.zip 
+    dest: "{{tmp_path.path}}"
+    remote_src: yes
+- name: copy binarys
+  copy: src="{{tmp_path.path}}/bin/" dest=/usr/local/bin owner=root group=root mode=0755
+  become: true
+- name: copy headers
+  copy: src="{{tmp_path.path}}/include/" dest=/usr/local/include owner=root group=root mode=0755
+  become: true
